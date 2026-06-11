@@ -1,0 +1,6 @@
+{
+  "name": "Biofarmex Bodega",
+  "description": "Tienda en línea de medicamentos y suplementos veterinarios de alta calidad para mascotas y ganadería.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
