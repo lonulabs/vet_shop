@@ -1,13 +1,879 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" ng-app="BioApp">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Biofarmex Bodega - Medicamentos y Suplementos Veterinarios</title>
+
+    <!-- Required AngularJS and Angular Material Assets requested by the user -->
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.10/angular-material.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.10/angular-material.min.js"></script>
+
+    <style>
+      /* Global Layout Improvements */
+      body {
+        font-family: 'Inter', sans-serif, system-ui;
+        background-color: #f8fafc;
+        color: #0f172a;
+        margin: 0;
+      }
+      
+      [ng-cloak] {
+        display: none !important;
+      }
+
+      /* Premium Brand Aesthetics */
+      .brand-title {
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        color: #ffffff;
+      }
+      
+      .brand-accent {
+        color: #fbbf24;
+      }
+
+      /* Modern Tabs/Navigation header */
+      .nav-tab-bar {
+        background-color: #0b5345 !important;
+      }
+
+      .nav-tab-button {
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: rgba(255, 255, 255, 0.8) !important;
+        border-bottom: 3px solid transparent;
+        border-radius: 0 !important;
+        margin: 0 !important;
+        padding: 0 16px !important;
+        height: 64px;
+      }
+
+      .nav-tab-button.active {
+        color: #ffffff !important;
+        border-bottom: 3px solid #fbbf24 !important;
+        background-color: rgba(255, 255, 255, 0.08) !important;
+      }
+
+      /* Image Carousel Slider styling */
+      .carousel-container {
+        position: relative;
+        overflow: hidden;
+        border-radius: 12px;
+        height: 480px;
+        background: #022c22;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      }
+
+      .carousel-slide {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transition: opacity 0.8s ease-in-out;
+        background-size: cover;
+        background-position: center;
+      }
+
+      .carousel-slide.active {
+        opacity: 1;
+        z-index: 1;
+      }
+
+      .carousel-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: 0;
+        background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0.4) 50%, rgba(15, 23, 42, 0.1) 100%);
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 48px;
+        color: white;
+      }
+
+      .carousel-controls {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 16px;
+        box-sizing: border-box;
+        z-index: 3;
+      }
+
+      .carousel-btn {
+        background: rgba(15, 23, 42, 0.6) !important;
+        color: white !important;
+      }
+
+      .carousel-btn:hover {
+        background: rgba(15, 23, 42, 0.9) !important;
+      }
+
+      .carousel-indicators {
+        position: absolute;
+        bottom: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 8px;
+        z-index: 3;
+      }
+
+      .indicator-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.4);
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .indicator-dot.active {
+        background: #fbbf24;
+        width: 24px;
+        border-radius: 5px;
+      }
+
+      /* Beautiful Cards Grid */
+      .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 24px;
+        padding: 16px 0;
+      }
+
+      .product-card {
+        background: #ffffff;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1), 0 5px 15px -5px rgba(0, 0, 0, 0.05);
+        border-color: #cbd5e1;
+      }
+
+      .product-image {
+        height: 200px;
+        background-color: #f1f5f9;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+      }
+
+      .product-tag {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        background-color: #0d9488;
+        color: white;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+
+      .format-price-row {
+        background: #f8fafc;
+        border-radius: 8px;
+        padding: 8px 12px;
+        margin-top: 6px;
+        border: 1px solid #f1f5f9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .format-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #475569;
+      }
+
+      .price-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: #0f172a;
+      }
+
+      /* About & Values styling */
+      .value-card {
+        text-align: center;
+        padding: 24px;
+        border-radius: 8px;
+        background: white;
+        border: 1px solid #e2e8f0;
+      }
+
+      .badge-count {
+        background-color: #ef4444;
+        color: white;
+        font-size: 12px;
+        font-weight: 700;
+        min-width: 20px;
+        height: 20px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 6px;
+        position: absolute;
+        top: 4px;
+        right: 4px;
+      }
+
+      /* Cart Side Drawer details */
+      .cart-sidenav {
+        width: 380px !important;
+        max-width: 90%;
+        background-color: #ffffff;
+      }
+
+      .cart-header {
+        background-color: #0f172a;
+        color: #ffffff;
+        padding: 16px;
+      }
+
+      .cart-footer {
+        padding: 20px;
+        border-top: 1px dashed #cbd5e1;
+        background-color: #f8fafc;
+      }
+
+      .cart-line-item {
+        border-bottom: 1px solid #f1f5f9;
+        padding: 12px 16px;
+      }
+
+      .cart-qty-btn {
+        min-width: 28px !important;
+        min-height: 28px !important;
+        height: 28px !important;
+        width: 28px !important;
+        margin: 0 4px !important;
+        padding: 0 !important;
+        line-height: 28px !important;
+      }
+
+      /* Dialogue template formula matrix display */
+      .dialog-header {
+        background-color: #0f766e;
+        color: white;
+        padding: 16px 24px;
+      }
+
+      .dialog-content {
+        padding: 24px;
+        max-width: 500px;
+      }
+
+      /* Responsive elements adjustments */
+      @media (max-width: 600px) {
+        .carousel-container {
+          height: 320px;
+        }
+        .carousel-overlay {
+          padding: 20px;
+        }
+        .cart-sidenav {
+          width: 100% !important;
+        }
+      }
+    </style>
   </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+  <body ng-controller="StoreController" ng-cloak class="layout-column">
+
+    <!-- Top Core Application Header / Navigation -->
+    <md-toolbar class="md-whiteframe-3dp md-tall" style="background-color: #0f766e; height: auto;">
+      <div class="md-toolbar-tools layout-row layout-align-start-center" style="padding: 12px 24px; min-height: 72px;">
+        <div class="layout-column flex">
+          <h1 class="brand-title" style="margin: 0; font-size: 26px;">
+            <md-icon style="color: #fbbf24; margin-right: 8px; font-size: 28px; height:28px; width:28px;">pets</md-icon> 
+            Biofarmex <span class="brand-accent">Bodega</span>
+          </h1>
+          <span style="font-size: 13px; color: rgba(255,255,255,0.8); font-weight: 400; margin-top:2px;">Medicamentos, Vitaminas y Suplementos Veterinarios</span>
+        </div>
+
+        <!-- Desktop Navigation Actions & Cart Trigger -->
+        <div class="layout-row layout-align-center-center">
+          <!-- Floating Cart Button -->
+          <md-button class="md-icon-button" aria-label="Carrito" ng-click="toggleCartSidenav()" style="position: relative; background: rgba(255,255,255,0.1); margin-right: 8px;">
+            <md-icon style="color: white;">shopping_cart</md-icon>
+            <span class="badge-count" ng-if="getCartCount() > 0">{{getCartCount()}}</span>
+          </md-button>
+          
+          <md-button class="md-raised md-accent" ng-click="toggleCartSidenav()" style="text-transform: none; font-weight:600; margin-left:8px;">
+            Cotizar: {{ getCartSum() | currency:"$" }} 
+          </md-button>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs bar -->
+      <div class="nav-tab-bar layout-row layout-xs-column layout-align-center-stretch" style="background-color: #0b5345;">
+        <md-button class="nav-tab-button" ng-class="{'active': activeTab === 'inicio'}" ng-click="switchTab('inicio')">Inicio</md-button>
+        <md-button class="nav-tab-button" ng-class="{'active': activeTab === 'nosotros'}" ng-click="switchTab('nosotros')">Nosotros</md-button>
+        <md-button class="nav-tab-button" ng-class="{'active': activeTab === 'catalog'}" ng-click="switchTab('catalog')">Catálogo de Productos</md-button>
+        <md-button class="nav-tab-button" ng-class="{'active': activeTab === 'promos'}" ng-click="switchTab('promos')">Promociones</md-button>
+        <md-button class="nav-tab-button" ng-class="{'active': activeTab === 'contacto'}" ng-click="switchTab('contacto')">Contacto</md-button>
+      </div>
+    </md-toolbar>
+
+    <!-- Main Content Viewport Switcher Container -->
+    <md-content class="flex" style="padding: 24px; background-color: #f8fafc;">
+      <div style="max-width: 1200px; margin: 0 auto; width: 100%;">
+
+        <!-- ================= VIEW 1: INICIO ================= -->
+        <div ng-if="activeTab === 'inicio'" class="layout-column gap-lg animate-fade-in">
+          
+          <!-- Modern Image Carousel With Gradient Texts -->
+          <div class="carousel-container">
+            <div class="carousel-slide" 
+                 ng-repeat="img in carouselImages" 
+                 ng-class="{'active': $index === currentSlideIdx}"
+                 ng-style="{'background-image': 'url(' + img + ')'}">
+              <div class="carousel-overlay">
+                <span style="color: #fbbf24; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Distribuidor Veterinario Líder</span>
+                <h2 style="font-size:36px; margin: 0 0 12px 0; font-weight:700; line-height:1.2;">Cuidado Avanzado para Hatos y Animales de Alto Rendimiento</h2>
+                <p style="font-size:16px; margin:0 0 24px 0; max-width:650px; color:rgba(255,255,255,0.9); line-height:1.5;">
+                  Suministramos desparasitantes formulados, antibióticos de amplio espectro y suplementos vitamínicos con los mejores estándares del mercado nacional para establos, granjas y clínicas.
+                </p>
+                <div class="layout-row">
+                  <md-button class="md-raised md-primary" ng-click="switchTab('catalog')" style="padding: 6px 20px; font-weight:600;">Ver Catálogo de Bodega</md-button>
+                  <md-button class="md-flat" ng-click="switchTab('contacto')" style="color: white; border: 1px solid white; margin-left: 12px; font-weight: 500;">Solicitar Asesoría</md-button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="carousel-controls">
+              <md-button class="md-icon-button carousel-btn" aria-label="Anterior" ng-click="prevSlide()">
+                <md-icon>chevron_left</md-icon>
+              </md-button>
+              <md-button class="md-icon-button carousel-btn" aria-label="Siguiente" ng-click="nextSlide()">
+                <md-icon>chevron_right</md-icon>
+              </md-button>
+            </div>
+
+            <div class="carousel-indicators">
+              <div class="indicator-dot" 
+                   ng-repeat="img in carouselImages" 
+                   ng-class="{'active': $index === currentSlideIdx}"
+                   ng-click="setSlide($index)">
+              </div>
+            </div>
+          </div>
+
+          <!-- Highlight Core Confidence Pillars -->
+          <div class="layout-row layout-xs-column layout-align-space-between-stretch" style="margin-top: 36px; gap: 16px;">
+            <div class="value-card flex layout-column layout-align-start-center" style="border-top: 4px solid #0f766e;">
+              <md-icon class="brand-primary" style="font-size:40px; height:40px; width:40px; color:#0f766e; margin-bottom:12px;">verified_user</md-icon>
+              <h3 style="margin: 0 0 8px 0; font-size:16px; font-weight:700;">Productos Certificados</h3>
+              <p style="margin:0; font-size:13px; color:#475569; line-height:1.5;">Medicinas de formulaciones concentradas y loteados con sellos de sanidad vigentes.</p>
+            </div>
+            <div class="value-card flex layout-column layout-align-start-center" style="border-top: 4px solid #fbbf24;">
+              <md-icon class="brand-accent" style="font-size:40px; height:40px; width:40px; color:#d97706; margin-bottom:12px;">local_shipping</md-icon>
+              <h3 style="margin: 0 0 8px 0; font-size:16px; font-weight:700;">Envíos Directos de Bodega</h3>
+              <p style="margin:0; font-size:13px; color:#475569; line-height:1.5;">Despachos ágiles embalados con cadena de refrigeración en antibióticos biológicos.</p>
+            </div>
+            <div class="value-card flex layout-column layout-align-start-center" style="border-top: 4px solid #0f766e;">
+              <md-icon class="brand-primary" style="font-size:40px; height:40px; width:40px; color:#0f766e; margin-bottom:12px;">support_agent</md-icon>
+              <h3 style="margin: 0 0 8px 0; font-size:16px; font-weight:700;">Soporte Técnico Especializado</h3>
+              <p style="margin:0; font-size:13px; color:#475569; line-height:1.5;">Te asesoramos en dosificaciones, compatibilidad y calendarios de desparasitación.</p>
+            </div>
+          </div>
+
+          <!-- Top Actionable Featured Promos Section Slider -->
+          <div style="margin-top: 48px;">
+            <div class="layout-row layout-align-space-between-center" style="margin-bottom: 20px;">
+              <h2 style="font-size: 24px; font-weight: 700; margin: 0; color: #0f172a;">Combos y Promociones Exclusivas de Bodega</h2>
+              <md-button class="md-primary md-raised" ng-click="switchTab('promos')" style="text-transform: none; font-weight: 600;">Ver Todas las Promociones</md-button>
+            </div>
+
+            <div class="layout-row layout-xs-column" style="gap:20px;">
+              <div class="product-card flex" ng-repeat="promo in promoItems | limitTo:3" style="min-width: 0;">
+                <div style="padding: 24px; position: relative;">
+                  <span class="product-tag" style="background:#ef4444; font-size:10px;">PROMO EXPLETIVA</span>
+                  <div style="font-size:12px; color:#64748b; font-weight:600; margin-top:16px;">Código: {{promo.code}}</div>
+                  <h3 style="font-size: 18px; font-weight:700; margin: 4px 0 12px 0; color:#0f172a; height: 44px; overflow:hidden;">{{promo.name}}</h3>
+                  <div class="layout-row layout-align-space-between-center" style="border-top: 1px solid #f1f5f9; padding-top: 12px; margin-top:20px;">
+                    <div>
+                      <div style="font-size:12px; color:#64748b;">Presentación</div>
+                      <div style="font-size:14px; font-weight:700; color:#475569;">{{promo.unit}}</div>
+                    </div>
+                    <div style="text-align: right;">
+                      <div style="font-size:12px; color:#64748b;">Precio Especial</div>
+                      <div style="font-size:20px; font-weight:800; color:#0f766e;">${{promo.price | number:2}} MXN</div>
+                    </div>
+                  </div>
+                </div>
+                <div style="padding: 16px; background:#f8fafc; border-top:1px solid #e2e8f0;" class="layout-row">
+                  <md-button class="md-raised md-accent flex" ng-click="addPromoToCart(promo)" ng-if="!isPromoInCart(promo)">
+                    Agregar Promo
+                  </md-button>
+                  <md-button class="md-raised md-primary flex" style="background-color: #0d9488;" ng-click="toggleCartSidenav()" ng-if="isPromoInCart(promo)">
+                    En Carrito ✓
+                  </md-button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= VIEW 2: NOSOTROS ================= -->
+        <div ng-if="activeTab === 'nosotros'" class="layout-column gap-lg animate-fade-in" style="background: white; padding: 40px; border-radius: 12px; border:1px solid #e2e8f0;">
+          <h2 style="font-size: 28px; font-weight: 700; margin: 0 0 12px 0; color: #0f172a;">¿Quiénes Somos en Biofarmex Bodega?</h2>
+          <div class="layout-row layout-xs-column" style="gap:32px;">
+            <div class="flex">
+              <p style="font-size: 15px; color:#475569; line-height:1.7; margin:0 0 16px 0;">
+                Somos una distribuidora farmacéutica certificada de medicamentos y biológicos para el ramo de salud agropecuaria. Con sede en México, nos especializamos en la comercialización masiva de sustancias activas críticas (desparasitantes, vitaminas hidrosolubles concentradas, analgésicos selectivos y antibióticos sistémicos).
+              </p>
+              <p style="font-size: 15px; color:#475569; line-height:1.7; margin:0 0 24px 0;">
+                Atendemos de forma directa a establos lecheros, granjas porcinas tecnificadas, médicos veterinarios zootecnistas, uniones ganaderas estatales y farmacias veterinarias minoristas que requieren consolidar volumen de manera segura, con cadena de frío garantizada y soporte de compatibilidad terapéutica.
+              </p>
+
+              <h4 style="font-size: 18px; font-weight: 700; margin: 0 0 12px 0; color: #0f172a;">Nuestros Valores de Calidad</h4>
+              <md-list class="md-dense">
+                <md-list-item>
+                  <md-icon style="color: #0f766e; margin-right:12px;">done_all</md-icon>
+                  <div class="md-list-item-text">
+                    <strong>Integridad Farmacológica:</strong> Solo distribuimos marcas con aprobaciones oficiales de salubridad e inocuidad alimentaria.
+                  </div>
+                </md-list-item>
+                <md-list-item>
+                  <md-icon style="color: #0f766e; margin-right:12px;">done_all</md-icon>
+                  <div class="md-list-item-text">
+                    <strong>Consistencia de Precios:</strong> Descuentos transparentes por volumen directo de bodega sin intermediarios.
+                  </div>
+                </md-list-item>
+                <md-list-item>
+                  <md-icon style="color: #0f766e; margin-right:12px;">done_all</md-icon>
+                  <div class="md-list-item-text">
+                    <strong>Cadena de Custodia:</strong> Monitoreo de envíos refrigerados desde almacenes estériles hasta el destino final.
+                  </div>
+                </md-list-item>
+              </md-list>
+            </div>
+
+            <!-- Side Card with Info Context -->
+            <div style="background: #f8fafc; border-radius: 8px; padding: 24px; border: 1px solid #cbd5e1; width: 320px;" class="layout-column">
+              <md-icon style="font-size:48px; color:#0f766e; height:48px; width:48px; margin-bottom:16px;">health_and_safety</md-icon>
+              <h4 style="font-size:16px; font-weight:700; margin:0 0 8px 0; color:#0f172a;">Atención Especializada</h4>
+              <p style="font-size:13px; color:#64748b; line-height:1.6; margin:0 0 16px 0;">
+                ¿Es usted gestor de compras de un hato grande? Ponemos a su disposición asesores veterinarios dedicados para proyectar sus calendarios anuales de tratamiento con descuentos personalizados.
+              </p>
+              <md-button class="md-raised md-primary" ng-click="switchTab('contacto')" style="text-transform: none; margin:0;">Contactar un Asesor</md-button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= VIEW 3: CATALOGUE ================= -->
+        <div ng-if="activeTab === 'catalog'" class="layout-column gap-lg animate-fade-in">
+          
+          <!-- Unified Filters header -->
+          <div style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 24px; border: 1px solid #e2e8f0;" class="layout-column">
+            <div class="layout-row layout-xs-column layout-align-space-between-center" style="gap: 16px; width:100%;">
+              <!-- Interactive Search text block -->
+              <md-input-container class="md-block flex" style="margin: 0;">
+                <label>Buscar medicamentos por nombre, ingredientes o dosis...</label>
+                <md-icon class="material-icons">search</md-icon>
+                <input ng-model="searchQuery">
+              </md-input-container>
+              
+              <!-- Tag selection dropdown on smaller devices or simple filter -->
+              <div class="layout-row layout-align-end-center" style="font-weight: 500; font-size:14px; color:#475569;">
+                <md-icon style="margin-right:8px; color: #64748b;">filter_list</md-icon> Encontrados: {{(catalogItems | filter:filterCatalog).length}} productos
+              </div>
+            </div>
+
+            <!-- Chips like tab layout buttons for Category selection -->
+            <div class="layout-row layout-wrap" style="margin-top: 12px; gap:8px;">
+              <md-button class="md-raised" 
+                         ng-repeat="tag in tagsList"
+                         ng-class="{'md-primary': selectedTagFilter === tag, 'md-default': selectedTagFilter !== tag}"
+                         ng-click="selectTag(tag)"
+                         style="text-transform: none; border-radius: 20px; min-height: 32px; line-height: 32px; margin:0; font-size: 13px;">
+                {{tag}}
+              </md-button>
+            </div>
+          </div>
+
+          <!-- Product Listing Grid Cards layout -->
+          <div class="product-grid">
+            <div class="product-card" ng-repeat="item in catalogItems | filter:filterCatalog">
+              
+              <!-- Card Header / Image / Tags -->
+              <div class="product-image" ng-style="{'background-image': 'url(' + item.image + ')'}">
+                <span class="product-tag">{{item.tags[0]}}</span>
+              </div>
+
+              <!-- Card Core Info details -->
+              <div style="padding: 20px; flex: 1;" class="layout-column justify-between">
+                <div>
+                  <h3 style="font-size: 18px; font-weight:700; margin: 0 0 8px 0; color: #0f172a;">{{item.name}}</h3>
+                  <p style="font-size: 13px; color: #475569; line-height: 1.5; margin: 0 0 12px 0; height: 60px; overflow:hidden;">{{item.info}}</p>
+                  
+                  <div ng-if="item.dosis" style="background: #f1f5f9; padding: 6px 10px; border-radius: 6px; font-size:11px; color:#475569; margin-bottom:12px;">
+                    <strong>Dosificación:</strong> {{item.dosis | limitTo:90}}...
+                  </div>
+                </div>
+
+                <!-- SELECTABLE PRESENTATION FORMATS -->
+                <div>
+                  <h4 style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; margin: 12px 0 6px 0; letter-spacing: 0.5px;">Presentaciones y Precios directos</h4>
+                  <div ng-repeat="format in item.formats" class="format-price-row">
+                    <span class="format-label">{{format[1]}}</span>
+                    <div class="layout-row layout-align-end-center">
+                      <span class="price-label" style="margin-right:12px;">
+                        <span ng-if="format[2] !== null">${{format[2] | number:2}} MXN</span>
+                        <span ng-if="format[2] === null" style="color:#64748b; font-weight:500;">Consultar</span>
+                      </span>
+
+                      <!-- Cart Action button -->
+                      <md-button class="md-icon-button md-primary" 
+                                 aria-label="Agregar" 
+                                 ng-disabled="format[2] === null"
+                                 ng-click="addFormatToCart(item, format)"
+                                 style="background: #0f766e; color: white; width:28px; height:28px; min-height:28px; min-width:28px; margin:0; line-height:28px; padding:0;">
+                        <md-icon style="font-size:16px; width:16px; height:16px; line-height:16px;" ng-if="!isFormatInCart(item, format[1])">add</md-icon>
+                        <md-icon style="font-size:16px; width:16px; height:16px; line-height:16px; color:#fbbf24;" ng-if="isFormatInCart(item, format[1])">check</md-icon>
+                      </md-button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Footer action of cards style -->
+              <div style="padding: 12px 20px; background-color: #f8fafc; border-top: 1px solid #cbd5e1;" class="layout-row layout-align-space-between-center">
+                <md-button class="md-flat" ng-click="showProductDetails($event, item)" style="text-transform:none; font-size:12px; font-weight:600; color:#0f766e; padding:0; margin:0;">
+                  <md-icon style="font-size:16px; height:16px; width:16px; min-height:16px; vertical-align:middle; margin-right:4px;">science</md-icon> ver fórmula química
+                </md-button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= VIEW 4: PROMOS ================= -->
+        <div ng-if="activeTab === 'promos'" class="layout-column gap-lg animate-fade-in">
+          <div style="background-color: #0f172a; color: white; padding: 32px; border-radius: 12px; margin-bottom: 24px;" class="layout-column">
+            <h2 style="font-size: 24px; font-weight: 700; margin: 0 0 8px 0; color:#fbbf24;">Promociones por Código de Bodega</h2>
+            <p style="margin: 0; font-size: 14px; color: rgba(255,255,255,0.8); line-height:1.5;">
+              Precios válidos mencionando el código expreso al concretar su pedido. Con el cotizador de coche, puede agregarlos directamente para estimar su orden de preventa al por mayor.
+            </p>
+          </div>
+
+          <div class="product-grid">
+            <div class="product-card" ng-repeat="promo in promoItems">
+              <div style="padding: 24px; position: relative;" class="layout-column flex justify-between">
+                
+                <div>
+                  <div class="layout-row layout-align-space-between-center" style="margin-bottom:12px;">
+                    <span style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700;">
+                      PROMO #{{promo.code}}
+                    </span>
+                    <md-icon style="color:#fbbf24; font-size:24px; width:24px; height:24px;">local_offer</md-icon>
+                  </div>
+                  
+                  <h3 style="font-size: 18px; font-weight:700; margin: 0 0 8px 0; height: 44px; overflow:hidden; color:#1e293b;">{{promo.name}}</h3>
+                  <div style="font-size: 13px; color: #64748b; margin-top:8px;">Unidades de Empaque: <strong>{{promo.unit}}</strong></div>
+                </div>
+
+                <div class="layout-row layout-align-space-between-center" style="margin-top: 24px; border-top: 1px solid #f1f5f9; padding-top: 16px;">
+                  <div>
+                    <span style="font-size: 11px; color:#64748b; text-transform:uppercase; display:block;">Precio Directo</span>
+                    <span style="font-size: 22px; font-weight:800; color:#ef4444;">${{promo.price | number:2}} MXN</span>
+                  </div>
+                  
+                  <md-button class="md-raised md-accent" style="margin:0; text-transform:none; font-weight:600;" ng-click="addPromoToCart(promo)" ng-if="!isPromoInCart(promo)">
+                    Agregar Combo
+                  </md-button>
+                  <md-button class="md-raised md-primary" style="background-color: #0d9488; margin:0;" ng-click="toggleCartSidenav()" ng-if="isPromoInCart(promo)">
+                    En Carrito ✓
+                  </md-button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= VIEW 5: CONTACTO ================= -->
+        <div ng-if="activeTab === 'contacto'" class="layout-column gap-lg animate-fade-in">
+          
+          <div class="layout-row layout-xs-column" style="gap:24px;">
+            <!-- Contact Form Component -->
+            <div class="flex" style="background: white; padding: 32px; border-radius: 12px; border: 1px solid #e2e8f0;">
+              <h2 style="font-size: 22px; font-weight: 700; margin: 0 0 6px 0; color:#0f172a;">Formulario de Consulta Directa</h2>
+              <p style="margin:0 0 24px 0; font-size:13px; color:#64748b;">Deje sus datos de contacto y responderemos vía correo electrónico, llamada o WhatsApp de forma prioritaria.</p>
+              
+              <form name="contactForm" ng-submit="submitContactForm()">
+                <div class="layout-row layout-xs-column" style="gap:16px;">
+                  <md-input-container class="md-block flex" style="margin-bottom:0;">
+                    <label>Nombre Completo</label>
+                    <input ng-model="contact.name" required>
+                  </md-input-container>
+                  <md-input-container class="md-block flex" style="margin-bottom:0;">
+                    <label>Teléfono de Contacto</label>
+                    <input ng-model="contact.phone" type="tel">
+                  </md-input-container>
+                </div>
+
+                <md-input-container class="md-block" style="margin-bottom:12px;">
+                  <label>Correo Electrónico</label>
+                  <input ng-model="contact.email" type="email" required>
+                </md-input-container>
+
+                <md-input-container class="md-block" style="margin-bottom:12px;">
+                  <label>Mensaje / Productos Interesados para Cotizar</label>
+                  <textarea ng-model="contact.msg" md-maxlength="500" rows="4" required></textarea>
+                </md-input-container>
+
+                <div class="layout-row layout-align-end-center">
+                  <md-button type="submit" class="md-raised md-primary" style="margin:0; padding:4px 24px; text-transform:none; font-weight:600;">
+                    Enviar Consulta Técnica
+                  </md-button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Side Address Copy/Clipboard Panel -->
+            <div style="background: white; border-radius: 12px; padding: 32px; border:1px solid #e2e8f0; width: 340px;" class="layout-column justify-between">
+              <div>
+                <h3 style="font-size: 18px; font-weight: 700; margin: 0 0 16px 0; color: #1e293b;">Información de Atención</h3>
+                
+                <div style="margin-bottom: 20px;">
+                  <div style="font-size:11px; text-transform:uppercase; color:#64748b; font-weight:600;">Teléfono Principal</div>
+                  <div class="layout-row layout-align-space-between-center" style="margin-top:4px;">
+                    <span style="font-size:15px; font-weight:700; color:#0f766e;">+52 (123) 456-7890</span>
+                    <md-button class="md-icon-button" aria-label="Copiar" ng-click="copyToClipboard('+521234567890', 'Teléfono')" style="margin:0;">
+                      <md-icon style="font-size:18px; color: #64748b;">content_copy</md-icon>
+                    </md-button>
+                  </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                  <div style="font-size:11px; text-transform:uppercase; color:#64748b; font-weight:600;">Correo Electrónico</div>
+                  <div class="layout-row layout-align-space-between-center" style="margin-top:4px;">
+                    <span style="font-size:14px; font-weight:700; color:#0f766e;">bodega@biofarmex.com</span>
+                    <md-button class="md-icon-button" aria-label="Copiar" ng-click="copyToClipboard('bodega@biofarmex.com', 'Correo')" style="margin:0;">
+                      <md-icon style="font-size:18px; color: #64748b;">content_copy</md-icon>
+                    </md-button>
+                  </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                  <div style="font-size:11px; text-transform:uppercase; color:#64748b; font-weight:600;">Almacén Central</div>
+                  <p style="margin:4px 0 0 0; font-size:13px; color:#475569; line-height:1.5;">
+                    Camino Real Agropecuario km 12, Zona Industrial de Abasto, México.
+                  </p>
+                </div>
+              </div>
+
+              <!-- General visual hours -->
+              <div style="background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #f1f5f9; margin-top:20px;">
+                <div style="font-size: 12px; font-weight:700; color:#475569;" class="layout-row layout-align-start-center">
+                  <md-icon style="font-size:16px; height:16px; width:16px; margin-right:6px; color:#0f766e;">schedule</md-icon>
+                  Horario de Atención de Bodega
+                </div>
+                <p style="margin:4px 0 0 0; font-size:11px; color:#64748b; line-height:1.4;">
+                  Lunes a Viernes: 8:00 AM - 6:00 PM<br>
+                  Sábados: 9:00 AM - 2:00 PM
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </md-content>
+
+    <!-- Professional Base Footer -->
+    <footer style="background-color: #0f172a; color:#cbd5e1; padding: 40px 24px; border-top: 4px solid #0f766e;">
+      <div style="max-width: 1200px; margin: 0 auto; width: 100%;" class="layout-row layout-xs-column layout-align-space-between-stretch flex-wrap">
+        <div style="max-width: 320px; margin-bottom: 24px;" class="layout-column">
+          <h4 style="color: white; font-weight: 700; margin: 0 0 12px 0;">Biofarmex Bodega</h4>
+          <p style="font-size: 13px; color:#94a3b8; line-height:1.6; margin:0;">
+            Excelencia y confianza directa en distribución masiva de medicamentos, desparasitantes y aditivos alimenticios de uso pecuario y mascotas.
+          </p>
+        </div>
+        
+        <div style="margin-bottom: 24px;" class="layout-column">
+          <h4 style="color: white; font-weight: 700; margin: 0 0 12px 0;">Enlaces Rápidos</h4>
+          <div class="layout-column" style="gap: 8px; font-size:13px;">
+            <a href="#" ng-click="switchTab('inicio')" style="color: #94a3b8; text-decoration:none;">Inicio</a>
+            <a href="#" ng-click="switchTab('nosotros')" style="color: #94a3b8; text-decoration:none;">Nosotros</a>
+            <a href="#" ng-click="switchTab('catalog')" style="color: #94a3b8; text-decoration:none;">Catálogo</a>
+            <a href="#" ng-click="switchTab('promos')" style="color: #94a3b8; text-decoration:none;">Promociones</a>
+          </div>
+        </div>
+
+        <div style="max-width:300px; margin-bottom: 24px;" class="layout-column">
+          <h4 style="color: white; font-weight: 700; margin: 0 0 12px 0;">Inocuidad Agropecuaria</h4>
+          <p style="font-size: 12px; color:#64748b; line-height:1.5; margin:0;">
+            Todos los productos cumplen con la normatividad federal mexicana aplicable. Consulte a su Médico Veterinario Zootecnista antes de implementar calendarios de biológicos.
+          </p>
+        </div>
+      </div>
+
+      <div style="max-width: 1200px; margin: 24px auto 0 auto; border-top: 1px solid #1e293b; padding-top: 24px; text-align: center; font-size:12px; color:#64748b;">
+        © 2026 Biofarmex Bodega S.A. de C.V. Todos los derechos reservados.
+      </div>
+    </footer>
+
+    <!-- ================= SHOPPING CART SIDEBAR DRAWER ================= -->
+    <md-sidenav class="md-sidenav-right md-whiteframe-4dp cart-sidenav layout-column" md-component-id="rightSidenav">
+      <!-- Sidenav Header -->
+      <div class="cart-header layout-row layout-align-space-between-center">
+        <div class="layout-row layout-align-start-center">
+          <md-icon style="color: #fbbf24; margin-right: 8px;">shopping_cart</md-icon>
+          <span style="font-weight:700; font-size:16px;">Mi Cotización</span>
+        </div>
+        <md-button class="md-icon-button" aria-label="Cerrar" ng-click="closeCartSidenav()" style="margin:0;">
+          <md-icon style="color: white;">close</md-icon>
+        </md-button>
+      </div>
+
+      <!-- Sidenav Items Scrollable wrapper -->
+      <md-content class="flex" style="background: white;">
+        <div ng-if="cart_items.length === 0" style="padding: 48px; text-align: center;" class="layout-column layout-align-center-center">
+          <md-icon style="font-size: 64px; height:64px; width:64px; color: #cbd5e1; margin-bottom:16px;">production_quantity_limits</md-icon>
+          <span style="font-weight: 600; color: #64748b; font-size: 15px;">El carrito está vacío</span>
+          <p style="font-size:12px; color:#94a3b8; margin: 4px 0 0 0;">Navegue al Catálogo para agregar productos</p>
+        </div>
+
+        <div class="cart-line-item layout-column" ng-repeat="line in cart_items">
+          <div class="layout-row layout-align-space-between-start">
+            <div class="layout-column">
+              <span style="font-weight: 700; font-size: 14px; color:#1e293b;">{{line.name}}</span>
+              <span style="font-size:11px; background:#f1f5f9; color:#475569; padding:2px 6px; border-radius:4px; max-width:fit-content; margin-top:4px;">
+                {{line.format}}
+              </span>
+            </div>
+            
+            <!-- Remove line button -->
+            <md-button class="md-icon-button" aria-label="Remover" ng-click="removeFromCart(line.id)" style="margin:0; width: 32px; height: 32px; min-height: 32px; min-width: 32px;">
+              <md-icon style="color: #94a3b8; font-size:18px;">delete</md-icon>
+            </md-button>
+          </div>
+
+          <!-- Quantity indicators and Price -->
+          <div class="layout-row layout-align-space-between-center" style="margin-top:12px;">
+            <div class="layout-row layout-align-start-center">
+              <md-button class="md-icon-button md-raised cart-qty-btn" aria-label="Restar" ng-click="updateQty(line.id, -1)">-</md-button>
+              <span style="font-weight: 700; font-size:14px; min-width: 24px; text-align:center;">{{line.quantity}}</span>
+              <md-button class="md-icon-button md-raised cart-qty-btn" aria-label="Sumar" ng-click="updateQty(line.id, 1)">+</md-button>
+            </div>
+            
+            <div style="font-size:14px; font-weight:800; color:#0f766e;">
+              ${{line.price * line.quantity | number:2}} MXN
+            </div>
+          </div>
+        </div>
+      </md-content>
+
+      <!-- Sidenav Footer total summary with triggers -->
+      <div class="cart-footer layout-column" ng-if="cart_items.length > 0">
+        <div class="layout-row layout-align-space-between-center" style="margin-bottom: 16px;">
+          <span style="font-weight: 500; font-size:14px; color:#475569;">Total Estimado:</span>
+          <span style="font-weight: 800; font-size:22px; color:#0f766e;">${{getCartSum() | number:2}} MXN</span>
+        </div>
+
+        <md-button class="md-raised md-warn" style="text-transform: none; margin: 0 0 10px 0; background-color: #ef4444;" ng-click="clearCart()">
+          Vaciar Todo el Carrito
+        </md-button>
+
+        <md-button class="md-raised md-primary" style="text-transform: none; background-color: #0284c7; margin: 0 0 10px 0; font-weight: 600;" ng-click="downloadCotizacion()">
+          Descargar Cotización (.CSV)
+        </md-button>
+
+        <md-button class="md-raised md-accent" style="text-transform: none; margin: 0; font-weight: 700;" ng-click="sendWhatsApp()">
+          <md-icon style="font-size:18px; margin-right:4px;">share</md-icon> Enviar Pedido vía WhatsApp
+        </md-button>
+      </div>
+    </md-sidenav>
+
+    <!-- ================= HIDDEN ELEMENT: DETAILED DIALOG TEMPLATE ================= -->
+    <div style="visibility: hidden">
+      <div class="md-dialog-container" id="productDetailsDialog">
+        <md-dialog aria-label="Detalles del Producto" class="md-whiteframe-8dp" style="border-radius:12px; overflow:hidden;">
+          <div class="dialog-header layout-row layout-align-space-between-center">
+            <h3 style="margin:0; font-weight:700; font-size: 18px;">Dosificación y Fórmula Química</h3>
+            <md-button class="md-icon-button" aria-label="Cerrar" ng-click="closeDialog()" style="margin:0; color: white;">
+              <md-icon style="color: white;">close</md-icon>
+            </md-button>
+          </div>
+          
+          <div class="dialog-content">
+            <h2 style="font-size:22px; font-weight:700; margin: 0 0 12px 0; color:#1e293b;">{{dialogItem.name}}</h2>
+            
+            <p style="font-size:13px; color:#64748b; line-height:1.6; margin:0 0 20px 0;">
+              {{dialogItem.info}}
+            </p>
+
+            <div style="background: #f8fafc; border:1px solid #e2e8f0; border-radius: 8px; padding: 14px; margin-bottom: 20px;">
+              <h4 style="font-size: 12px; margin: 0 0 6px 0; font-weight:600; text-transform:uppercase; color:#0f766e;" class="layout-row layout-align-start-center">
+                <md-icon style="font-size:16px; height:16px; width:16px; margin-right:6px; color:#0f766e;">science</md-icon> Fórmula Activa
+              </h4>
+              <div style="font-size:11px; color:#94a3b8; margin-bottom:10px;">{{dialogItem.formula.header || "Concentración de componentes"}}</div>
+              
+              <table style="width:100%; font-size: 13px; border-collapse:collapse;" ng-if="dialogItem.formula.rows && dialogItem.formula.rows.length > 0">
+                <tbody>
+                  <tr ng-repeat="row in dialogItem.formula.rows" style="border-bottom: 1px solid #e2e8f0;">
+                    <td style="padding: 6px 0; font-weight: 500; color:#334155;">{{row[0]}}</td>
+                    <td style="padding: 6px 0; text-align:right; font-weight: 600; color:#0f766e;">{{row[1]}}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div style="font-size:12px; color:#64748b; font-style: italic;" ng-if="!dialogItem.formula.rows || dialogItem.formula.rows.length === 0">
+                Fórmula de concentración de disolución estándar de control.
+              </div>
+            </div>
+
+            <div style="background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 8px; padding: 14px;">
+              <h4 style="font-size:12px; margin:0 0 6px 0; font-weight:600; text-transform:uppercase; color:#d97706;" class="layout-row layout-align-start-center">
+                <md-icon style="font-size:16px; height:16px; width:16px; margin-right:6px; color:#d97706;">medical_services</md-icon> Directriz de aplicación
+              </h4>
+              <p style="margin:0; font-size:12px; color:#78350f; line-height:1.5;">
+                {{dialogItem.dosis || "Aplicación vía intramuscular o subcutánea estándar bajo recomendación facultativa."}}
+              </p>
+            </div>
+          </div>
+          
+          <md-dialog-actions layout="row" style="background:#f1f5f9; padding: 8px 16px;">
+            <span class="flex"></span>
+            <md-button ng-click="closeDialog()" class="md-raised md-primary" style="text-transform:none; margin:0; font-weight:600;">
+              Aceptar y Cerrar
+            </md-button>
+          </md-dialog-actions>
+        </md-dialog>
+      </div>
+    </div>
+
+    <!-- Load custom libraries that reference our global data -->
+    <script src="/data.js"></script>
+    <script src="/app.js"></script>
+
   </body>
 </html>
-
